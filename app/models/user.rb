@@ -12,9 +12,10 @@ class User < ApplicationRecord
   has_many :relationships
   has_many :followings, through: :relationships, source: :follow 
   
-  #Rails命名規則：User から Relationship を取得するとき、user_id が使用される
+  # ↑ Rails命名規則：User から Relationship を取得するとき、user_id が使用される
   #followingクラスがないため補足を加える　#中間テーブル＝has_many :relationship #参照id(カラム)＝follow_id
   #中間テーブルrelationships > relationship > follow_id
+  # ↑によって following_ids が自動生成される
   
   
   #多対多 follower
@@ -39,4 +40,9 @@ class User < ApplicationRecord
   def following?(other_user)
     self.followings.include?(other_user)
   end
+  
+  def feed_microposts
+    Micropost.where(user_id: self.following_ids + [self.id])
+  end
+    #タイムライン機能　#配列 + 配列　#following_ids・13行目から自動生成される
 end
